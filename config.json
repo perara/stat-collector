@@ -1,0 +1,28 @@
+{
+  "global": {
+    "modules": {
+      "cpu": "true",
+      "disk": "true",
+      "memory": "true",
+      "network": "true",
+      "updates": "true"
+    },
+    "base_document": {
+      "version": "1.1",
+      "host": "dev.grm.sysx.lan",
+      "short_message": "sysx.reporter.linux",
+      "full_message": "",
+      "timestamp": "",
+      "level": 1
+    }
+  },
+  "hosts": {
+    "10.0.1.15": {
+      "modules": {},
+      "port": "22",
+      "protocol": "ssh",
+      "username": "per",
+      "interfaces": ["ens18"]
+    }
+  }
+}

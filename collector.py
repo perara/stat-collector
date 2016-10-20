@@ -1,67 +1,45 @@
 import json
-from config import config
 import time
-import subprocess
 import os
+from importlib import import_module
+from threading import Thread
+
 PATH = os.path.dirname(os.path.abspath(__file__))
-SCRIPT_PATH = PATH + "/scripts/"
+MODULES_PATH = PATH + "/modules/"
 
+result = []  # All results
 
-def execute_script(script_file):
-    command = "/bin/bash " +  SCRIPT_PATH + script_file
-    output = subprocess.check_output(command.split())
-    return output.strip()
+# Load configuration
+with open(os.path.join(PATH, "config.json")) as data_file:
+	config = json.load(data_file)
 
+# Set timestamp in the base document
+config["global"]["base_document"]["timestamp"] = int(time.time())
 
-output = {
-	"version": "1.1",
-	"host": "dev.grm.sysx.lan",
-	"short_message": "sysx.reporter.linux",
-	"full_message": "",
-	"timestamp": int(time.time()),
-	"level": 1
+def worker(address, host):
+	output = config["global"]["base_document"]
 
-}
+	host["address"] = address # Workaround to get address into executor without passing extra param
 
-if config["modules"]["cpu"]:
-	cpu_percent = execute_script("cpu.sh")
-	output["cpu"] = int(cpu_percent)
-
-if config["modules"]["memory"]:
-	memory_free = execute_script("mem_free.sh")
-	memory_total = execute_script("mem_total.sh")
-	output["memory_free"] = int(memory_free)
-	output["memory_total"] = int(memory_total)
-	output["memory_used"] = int(memory_total) - int(memory_free)
-
-if config["modules"]["network"]:
-	for iface in config["network"]["interfaces"]:
-		bandwidth_in_out = execute_script("net_usage.sh %s" % iface)
-		bandwidth_in = bandwidth_in_out.split("\n")[0]
-		bandwidth_out = bandwidth_in_out.split("\n")[1]
-		output["network_%s_in" % iface] = int(bandwidth_in)
-		output["network_%s_out" % iface] = int(bandwidth_out)
-
-if config["modules"]["updates"]:
-	updates_all = execute_script("update.sh")
-	updates_security = updates_all.split(";")[0]
-	updates_packages = updates_all.split(";")[1]
-	output["updates_security"] = int(updates_security)
-	output["updates_packages"] = int(updates_packages)
-
-if config["modules"]["disk"]:
-	disk_data = execute_script("disk.sh")
-	for disk in disk_data.split("\n"):
-		splt = disk.split(";")
-		disk_name = splt[0]
-		disk_used = int(splt[1].replace("M",""))
-		disk_total = int(splt[2].replace("M",""))
-		disk_small_name = disk_name.split("/").pop()
-
-		if "tmpfs" in disk_name or "udev" in disk_name:
+	for module in os.listdir(MODULES_PATH):
+		if ".py" not in module:
 			continue
 
-		output["disk_%s_used" % disk_small_name] = disk_used
-		output["disk_%s_total" % disk_small_name] = disk_total
+		mod = import_module("modules." + module.replace(".py",""))
+		mod.run(host, config, output)
 
-print(json.dumps(output))
+	result.append(output)
+
+threads = []
+for key in config["hosts"]:
+	host = config["hosts"][key]
+	t = Thread(target=worker, args=(key, host, ))
+	t.daemon = True
+	t.start()
+	threads.append(t)
+
+for t in threads:
+	t.join()
+
+
+print(json.dumps(result))
