@@ -22,8 +22,13 @@ def worker(address, host):
 	host["address"] = address # Workaround to get address into executor without passing extra param
 
 	for module in os.listdir(MODULES_PATH):
+		mod_no_ext = module.replace(".py", "")
 		if ".py" not in module:
 			continue
+
+		if mod_no_ext in host["modules"]:
+			if host["modules"][mod_no_ext] == "false":
+				continue
 
 		mod = import_module("modules." + module.replace(".py",""))
 		mod.run(host, config, output)

@@ -1,4 +1,9 @@
 {
+  "reporting": {
+    "mode": "http",
+    "url": "graylog.grm.sysx.lan",
+    "port": 12202
+  },
   "global": {
     "modules": {
       "cpu": "true",
@@ -18,7 +23,9 @@
   },
   "hosts": {
     "10.0.1.15": {
-      "modules": {},
+      "modules": {
+        "network": "false"
+      },
       "port": "22",
       "protocol": "ssh",
       "username": "per",
