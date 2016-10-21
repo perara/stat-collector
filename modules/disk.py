@@ -17,5 +17,9 @@ def run(host, config, output):
         if "tmpfs" in disk_name or "udev" in disk_name:
             continue
 
+        # Some virtual disks have hostname-- as prefix. remove this
+        if "--" in disk_small_name:
+            disk_small_name = disk_small_name.split("--")[1]
+
         output["disk_%s_used" % disk_small_name] = disk_used
         output["disk_%s_total" % disk_small_name] = disk_total

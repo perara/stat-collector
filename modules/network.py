@@ -1,4 +1,6 @@
 
+import time
+
 from executor import execute
 
 def run(host, config, output):

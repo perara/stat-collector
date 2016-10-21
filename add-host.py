@@ -66,8 +66,11 @@ print("Successfully tested host")
 nics = input("List all network interfaces of the remote host as a comma-separated list(ie: eth0,eth1): ")
 nics = nics.split(",")
 
+name = input("Name of host: ")
+
 print("Writing host entry in config file...")
 config["hosts"][host] = {
+    "name": name,
     "port": port,
     "username": username,
     "protocol": "ssh",

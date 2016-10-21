@@ -1,5 +1,6 @@
 import os
 import subprocess
+import time
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 SCRIPT_PATH = PATH + "/scripts/"
@@ -15,5 +16,6 @@ def execute(script_file, host, params=[]):
         script
     ]
     command.extend(params)
+
     output = subprocess.check_output(command)
     return output
