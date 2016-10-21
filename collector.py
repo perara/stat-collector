@@ -43,8 +43,12 @@ def worker(address, host):
 			setting_tick  = host["modules"][module][1]
 		else:
 			# Use global settings
-			setting_enabled = config["global"]["modules"][module][0]
-			setting_tick = config["global"]["modules"][module][1]
+			try:
+				setting_enabled = config["global"]["modules"][module][0]
+				setting_tick = config["global"]["modules"][module][1]
+			except:
+				continue # TODO , add warning?
+
 
 
 		# Check if module is active in global and in host settings
