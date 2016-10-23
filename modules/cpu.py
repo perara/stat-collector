@@ -1,6 +1,6 @@
 from executor import execute
 
-def run(host, config, output):
-    cpu_percent = execute("cpu.sh", host)
-    output["cpu"] = int(cpu_percent)
 
+def run(parser):
+    cpu_percent = execute("cpu.sh", parser.host)
+    parser.measurement("cpu").value(int(cpu_percent))

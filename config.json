@@ -4,7 +4,8 @@
     "url": "10.0.1.15",
     "port": 8086,
     "prefix": "/write?db=sysx-monitor",
-    "engine": "influxdb"
+    "engine": "influxdb",
+    "timestamp": "true"
   },
   "global": {
     "modules": {
@@ -12,10 +13,8 @@
       "disk": ["true", 1] ,
       "memory": ["true", 1] ,
       "network": ["true", 1] ,
-      "updates": ["true", 60] ,
+      "updates": ["true", 1] ,
       "hostname": ["true", 1]
-    },
-    "base_document": {
     }
   },
   "hosts": {

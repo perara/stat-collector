@@ -1,8 +1,9 @@
 from executor import execute
 
-def run(host, config, output):
-    memory_free = execute("mem_free.sh", host)
-    memory_total = execute("mem_total.sh", host)
-    output["memory_free"] = int(memory_free)
-    output["memory_total"] = int(memory_total)
-    output["memory_used"] = int(memory_total) - int(memory_free)
+def run(parser):
+    memory_free = execute("mem_free.sh", parser.host)
+    memory_total = execute("mem_total.sh", parser.host)
+
+    parser.measurement("memory").pair("type", "free").value(int(memory_free))
+    parser.measurement("memory").pair("type", "total").value(int(memory_total))
+    parser.measurement("memory").pair("type", "used").value(int(memory_total) - int(memory_free))

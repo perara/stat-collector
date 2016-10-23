@@ -25,8 +25,4 @@ def load_config():
     # Load configuration
     with open(os.path.join(PATH, "./config.json")) as data_file:
         config = json.load(data_file)
-
-    # Set timestamp in the base document
-    config["global"]["base_document"]["timestamp"] = int(time.time() * pow(10, 9))
-
     return config

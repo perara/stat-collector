@@ -1,9 +1,15 @@
 from executor import execute
 
-def run(host, config, output):
-    updates_all = execute("update.sh", host)
+def run(parser):
+    updates_all = execute("update.sh", parser.host)
     updates = updates_all.strip().decode().split(";")
     updates_security = updates[0]
     updates_packages = updates[1]
-    output["updates_security"] = int(updates_security)
-    output["updates_packages"] = int(updates_packages)
+
+    parser.measurement("updates")\
+        .pair("type", "security")\
+        .value(int(updates_security))
+
+    parser.measurement("updates") \
+        .pair("type", "packages") \
+        .value(int(updates_packages))

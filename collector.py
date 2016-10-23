@@ -1,28 +1,27 @@
 import json
 import loaders
 import os
+from parsers import Parser
 from importlib import import_module
 from threading import Thread
-
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 MODULES_PATH = PATH + "/modules/"
 
-result = []  # All results
-
-
 config = loaders.load_config()
 tick = loaders.load_tick()
 
+results = []
 
 
 
 def worker(address, host):
-	document = dict(config["global"]["base_document"])
-	document["name"] = host["name"]
 
-	# Add host address to the node
-	host["address"] = address # Workaround to get address into executor without passing extra param
+	parser = Parser.new()
+	parser.global_set_address(address)
+	parser.global_set_host(host)
+	parser.global_set_timestamp() if config["reporting"]["timestamp"] == "true" else ""
+	parser.global_pair("host", host["name"])
 
 	# Identify all modules
 	modules = [os.path.splitext(f)[0] for f in os.listdir(MODULES_PATH) if os.path.splitext(f)[1] == ".py" and f != "__init__.py"]
@@ -31,7 +30,7 @@ def worker(address, host):
 	module_threads = []
 	def module_worker(module):
 		mod = import_module("modules." + module)
-		mod.run(host, config, document)
+		mod.run(parser)
 
 
 	for module in modules:
@@ -66,8 +65,7 @@ def worker(address, host):
 		thread.join()
 
 
-	result.append(document)
-
+	results.append(parser.get())
 
 
 
@@ -79,6 +77,7 @@ def worker(address, host):
 threads = []
 for key in config["hosts"]:
 	host = config["hosts"][key]
+	host["address"] = key
 	t = Thread(target=worker, args=(key, host, ))
 	t.start()
 	threads.append(t)
@@ -90,4 +89,5 @@ for thread in threads:
 # Increase tick count
 loaders.save_tick(tick + 1)
 
-print(json.dumps(result))
+
+print(json.dumps(results))

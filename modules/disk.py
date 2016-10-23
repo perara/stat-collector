@@ -1,8 +1,8 @@
 
 from executor import execute
 
-def run(host, config, output):
-    disk_data = execute("disk.sh", host)
+def run(parser):
+    disk_data = execute("disk.sh", parser.host)
     for disk in disk_data.decode().split("\n"):
         splt = disk.split(";")
 
@@ -21,5 +21,6 @@ def run(host, config, output):
         if "--" in disk_small_name:
             disk_small_name = disk_small_name.split("--")[1]
 
-        output["disk_%s_used" % disk_small_name] = disk_used
-        output["disk_%s_total" % disk_small_name] = disk_total
+
+        parser.measurement("disk").pair("device", disk_small_name).pair("type", "used").value(disk_used)
+        parser.measurement("disk").pair("device", disk_small_name).pair("type", "total").value(disk_total)
