@@ -5,16 +5,32 @@ from executor import execute
 
 def run(parser):
     for iface in parser.host["interfaces"]:
-        bandwidth_in_out = execute("net_usage.sh", parser.host, params=[iface])
-        bw_io = bandwidth_in_out.decode().split("\n")
-        bandwidth_in = bw_io[0]
-        bandwidth_out = bw_io[1]
+        bw_io = execute("net_bandwidth.sh", parser.host, params=[iface])
+        bw_io = bw_io.decode().strip().split(",")
 
-        parser.measurement("network")\
-            .pair("device", iface)\
-            .pair("direction", "in")\
-            .value(int(bandwidth_in))
-        parser.measurement("network")\
-            .pair("device", iface)\
-            .pair("direction", "out")\
-            .value(int(bandwidth_out))
+        if len(bw_io) == 2:
+            parser.measurement("network")\
+                .pair("device", iface)\
+                .pair("type", "bandwidth")\
+                .pair("direction", "out")\
+                .value(int(bw_io[0]))
+            parser.measurement("network") \
+                .pair("device", iface) \
+                .pair("type", "bandwidth") \
+                .pair("direction", "in") \
+                .value(int(bw_io[1]))
+
+        pps_io = execute("net_pps.sh", parser.host, params=[iface])
+        pps_io = pps_io.decode().split(",")
+
+        if len(pps_io) == 2:
+            parser.measurement("network") \
+                .pair("device", iface) \
+                .pair("type", "pps") \
+                .pair("direction", "out") \
+                .value(int(pps_io[0]))
+            parser.measurement("network") \
+                .pair("device", iface) \
+                .pair("type", "pps") \
+                .pair("direction", "in") \
+                .value(int(pps_io[1]))

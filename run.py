@@ -42,6 +42,7 @@ elif config["reporting"]["engine"] == "influxdb":
             req.add_header('Content-Length', '%d' % len(item))
             req.add_header('Content-Type', 'application/octet-stream')
             res = urlopen(req)
+            print(item)
 
         print("Pushed %s points for a host" % (len(host_items)))
 
