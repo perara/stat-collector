@@ -51,18 +51,17 @@ print("Done! Now confirming that keys were added successfully.")
 print("Attempting to poll for CPU usage: ")
 
 try:
-    script = os.path.join(PATH, "scripts/cpu.sh")
-    cmd2 = ['/bin/bash', os.path.join(PATH, "admin/test-ssh.sh"), port, username, host]
-    output = subprocess.check_output(cmd2)
-    output = output.strip()
-    output = int(output)
+    command = ['/bin/bash', os.path.join(PATH, "admin/test-ssh.sh"), port, username, host]
+    output = subprocess.check_output(command)
+    output = output.decode().replace("\n",", ").strip()
 except:
     print("Unexpected error:", sys.exc_info()[0])
     exit(0)
 
-print("Receieved %s CPU from %s" % (output, host))
+print("Receieved %s interface info from %s" % (output, host))
 print("Successfully tested host")
 
+print("\nAvailable network interfaces: %s" % (output))
 nics = input("List all network interfaces of the remote host as a comma-separated list(ie: eth0,eth1): ")
 nics = nics.split(",")
 
