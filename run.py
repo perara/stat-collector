@@ -3,6 +3,12 @@ import json
 import subprocess
 import sys
 import time
+import socket
+
+# timeout in seconds
+timeout = 1
+socket.setdefaulttimeout(timeout)
+
 from loaders import load_config
 try:
     from urllib.parse import urlparse, urlencode

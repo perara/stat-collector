@@ -1,0 +1,10 @@
+[Unit]
+Description=sysx-monitor timer
+
+[Timer]
+OnBootSec=0min
+OnCalendar=*:*:0/5
+Unit=timer-sysx-monitor.target
+
+[Install]
+WantedBy=basic.target  

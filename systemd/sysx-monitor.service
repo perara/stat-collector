@@ -1,0 +1,9 @@
+[Unit]
+Description=sysx-monitor
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opy/sysx-monitor/run.py
+
+[Install]
+WantedBy=sysx-monitor.target
